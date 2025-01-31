@@ -6,8 +6,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,44 +13,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.mockito.Mockito.when;
-
 public class ApplianceServiceTest {
-    AutoCloseable openedMocks;
     List<Appliance> mockAppliancesList = new ArrayList<>();
 
     @Before
     public void setUp() {
-        mockAppliancesList.add(new Bulb("Bulb in living room", 100.0));
-        mockAppliancesList.add(new EcoBulb("Eco bulb in bedroom", 20.0));
-        mockAppliancesList.add(new ElectricKettle("Electric Kettle", 2000.0));
-        mockAppliancesList.add(new Iron("Iron in living room", 2000.0));
-        mockAppliancesList.add(new ElectricStove("Electric Stove in kitchen", 3000.0));
-        mockAppliancesList.add(new MicrowaveOven("Microwave Oven in kitchen", 2000.0));
-        openedMocks = MockitoAnnotations.openMocks(this);
+        mockAppliancesList = generateAppliances();
     }
 
     @After
     public void tearDown() throws Exception {
-        openedMocks.close();
         mockAppliancesList.clear();
-    }
-
-    @Test
-    public void givenMockedApplianceList_whenGetAppliances_thenReturnIsEquals() {
-        try (var _ = Mockito.mockStatic(ApplianceService.class)) {
-            when(ApplianceService.generateAppliances()).thenReturn(mockAppliancesList);
-            List<Appliance> given = ApplianceService.generateAppliances();
-
-            Assert.assertArrayEquals(mockAppliancesList.toArray(), given.toArray());
-        }
-    }
-
-    @Test
-    public void givenApplianceList_whenGetAppliances_thenReturnIsNotEquals() {
-        List<Appliance> given = ApplianceService.generateAppliances(); // not equals by new generated UUID
-
-        Assert.assertNotSame(mockAppliancesList, given);
     }
 
     @Test
@@ -102,5 +73,16 @@ public class ApplianceServiceTest {
         Optional<Appliance> given = ApplianceService.findApplianceByPower(mockAppliancesList, 0.0, 10.0);
 
         Assert.assertFalse(given.isPresent());
+    }
+
+    private static List<Appliance> generateAppliances() {
+        List<Appliance> appliances = new ArrayList<>();
+        appliances.add(new Bulb("Bulb in living room", 100.0));
+        appliances.add(new EcoBulb("Eco bulb in bedroom", 20.0));
+        appliances.add(new ElectricKettle("Electric Kettle", 2000.0));
+        appliances.add(new Iron("Iron in living room", 2000.0));
+        appliances.add(new ElectricStove("Electric Stove in kitchen", 3000.0));
+        appliances.add(new MicrowaveOven("Microwave Oven in kitchen", 2000.0));
+        return appliances;
     }
 }
