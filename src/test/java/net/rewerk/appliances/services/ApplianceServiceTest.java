@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class ApplianceServiceTest {
@@ -73,6 +74,17 @@ public class ApplianceServiceTest {
         Optional<Appliance> given = ApplianceService.findApplianceByPower(mockAppliancesList, 0.0, 10.0);
 
         Assert.assertFalse(given.isPresent());
+    }
+    @Test
+    public void givenAppliancesList_whenFindAppliances_thenReturnList() {
+        Predicate<Appliance> filter = appliance -> appliance.getPower() >= 2000 && appliance.getPower() <= 3000;
+        List<Appliance> expected = mockAppliancesList.stream()
+                .filter(filter)
+                .toList();
+        List<Appliance> given = ApplianceService.findAppliances(mockAppliancesList, filter);
+
+        Assert.assertEquals(expected.size(), given.size());
+        Assert.assertEquals(expected, given);
     }
 
     private static List<Appliance> generateAppliances() {
